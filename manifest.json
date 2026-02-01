@@ -1,7 +1,7 @@
 {
   "name": "Mi App Azul",
   "short_name": "Mi App",
-  "description": "Presente, Archivo, Previsión y Ahorro (PWA)",
+  "description": "Financium",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
