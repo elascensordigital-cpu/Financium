@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Financium</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#134a9e">
+  <meta name="description" content="Financium: Presente, Archivo, Previsión y Ahorro.">
+
+  <!-- iOS support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Financium">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+
+  <style>
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background:#eaf2ff;
+      color:#0b2a5a;
+    }
+
+    header{
+      background:#134a9e;
+      padding:10px;
+    }
+
+    header img{
+      width:100%;
+      height:70px;
+      object-fit:cover;
+      border-radius:12px;
+    }
+
+    main{
+      max-width:1100px;
+      margin:auto;
+      padding:16px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:16px;
+    }
+
+    .card{
+      background:white;
+      border-radius:18px;
+      padding:16px;
+      display:flex;
+      align-items:center;
+      gap:14px;
+      box-shadow:0 8px 20px rgba(0,0,0,.08);
+      cursor:pointer;
+      transition:.15s;
+    }
+
+    .card:hover{
+      transform:translateY(-2px);
+    }
+
+    .card img{
+      width:72px;
+      height:72px;
+      object-fit:contain;
+      background:#eaf2ff;
+      border-radius:16px;
+      padding:8px;
+    }
+
+    .card strong{
+      font-size:20px;
+    }
+
+    footer{
+      text-align:center;
+      padding:24px;
+      color:#6b7280;
+      font-size:13px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <img src="./cabecera.png" alt="Financium">
+</header>
+
+<main>
+  <div class="grid">
+    <div class="card">
+      <img src="./presente.png" alt="Presente">
+      <strong>Presente</strong>
+    </div>
+
+    <div class="card">
+      <img src="./archivo.png" alt="Archivo">
+      <strong>Archivo</strong>
+    </div>
+
+    <div class="card">
+      <img src="./prevision.png" alt="Previsión">
+      <strong>Previsión</strong>
+    </div>
+
+    <div class="card">
+      <img src="./ahorro.png" alt="Ahorro">
+      <strong>Ahorro</strong>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Financium · PWA
+</footer>
+
+<!-- Service Worker -->
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js")
+        .then(() => console.log("Service Worker registrado"))
+        .catch(err => console.error("SW error", err));
+    });
+  }
+</script>
+
+</body>
+</html>
