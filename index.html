@@ -1,0 +1,1145 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Financium</title>
+
+  <!-- PWA (GitHub Pages /Financium/) -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#134a9e">
+  <meta name="description" content="Financium: Presente, Archivo, Previsión y Ahorro.">
+
+  <!-- iOS básico -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Financium">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+
+  <style>
+    :root{
+      --blue-900:#0b2a5a;
+      --blue-700:#134a9e;
+      --blue-100:#eaf2ff;
+      --shadow: 0 10px 25px rgba(0,0,0,.12);
+      --green:#2ecc71;
+      --red:#e74c3c;
+      --muted:#6b7280;
+      --border:#dbe6ff;
+      --card:#ffffff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: linear-gradient(180deg, var(--blue-100), #f7fbff 55%, #ffffff);
+      color:#0f172a;
+    }
+
+    header{
+      position: sticky;
+      top:0;
+      z-index: 50;
+      background: linear-gradient(90deg, var(--blue-900), var(--blue-700));
+      box-shadow: var(--shadow);
+    }
+    .header-inner{
+      width: 100%;
+      padding: 10px 12px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .brand{ flex: 1 1 520px; min-width: 0; }
+    .brand img{
+      width: 100%;
+      height: 66px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+    .top-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex: 0 0 auto;
+      justify-content:flex-end;
+    }
+
+    main{ max-width:1100px; margin: 0 auto; padding: 16px 14px 40px; }
+
+    .btn{
+      border:0;
+      cursor:pointer;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 800;
+      background: rgba(255,255,255,.14);
+      color: #fff;
+      transition: transform .05s ease, background .15s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn:hover{ background: rgba(255,255,255,.22); }
+    .btn:active{ transform: translateY(1px); }
+    .btn.secondary{ background: rgba(255,255,255,.10); }
+    .btn.primary{ background: #ffffff; color: var(--blue-900); }
+    .gear{
+      border: 1px solid rgba(255,255,255,.35);
+      background: rgba(255,255,255,.14);
+      color:#fff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      cursor:pointer;
+      font-weight: 900;
+      white-space:nowrap;
+    }
+
+    /* Home */
+    .home-grid{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 14px;
+      margin-top: 10px;
+    }
+    @media (max-width: 1000px){ .home-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 600px){ .home-grid{ grid-template-columns: 1fr; } }
+
+    .tile{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 10px 20px rgba(19,74,158,.10);
+      padding: 16px;
+      display:flex;
+      gap: 14px;
+      align-items:center;
+      cursor:pointer;
+      transition: transform .08s ease, box-shadow .15s ease;
+    }
+    .tile:hover{ transform: translateY(-1px); box-shadow: 0 16px 28px rgba(19,74,158,.14); }
+    .tile img{
+      width:84px; height:84px;
+      object-fit: contain;
+      border-radius: 18px;
+      background: var(--blue-100);
+      padding: 10px;
+    }
+    .tile strong{ font-size: 20px; color: var(--blue-900); font-weight: 1000; }
+
+    .page{ display:none; }
+    .page.active{ display:block; }
+
+    .panel{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 12px 26px rgba(11,42,90,.08);
+    }
+
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .row > * { flex: 1; min-width: 150px; }
+    label{ display:block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 800; }
+    input, select{
+      width:100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid #cfe0ff;
+      outline: none;
+      background:#fff;
+      font-size: 14px;
+    }
+    input:focus, select:focus{ border-color: #7aa8ff; box-shadow: 0 0 0 4px rgba(122,168,255,.18); }
+
+    .actions{ display:flex; gap:10px; justify-content:flex-end; margin-top: 12px; flex-wrap:wrap; }
+    .actions .btn{
+      background: linear-gradient(90deg, var(--blue-900), var(--blue-700));
+      color:#fff;
+      padding: 10px 14px;
+      border-radius: 12px;
+    }
+    .actions .btn.light{ background: #ffffff; color: var(--blue-900); border: 1px solid var(--border); }
+
+    .list{ margin-top: 12px; display:flex; flex-direction:column; gap:8px; }
+
+    .item{
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 12px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:#fff;
+    }
+
+    .pill{
+      font-size: 12px;
+      font-weight: 1000;
+      padding: 6px 10px;
+      border-radius: 999px;
+      white-space:nowrap;
+    }
+    .pill.income{ background: rgba(23,198,193,.20); color: #0b5b58; border: 1px solid rgba(23,198,193,.35); }
+    .pill.expense{ background: rgba(255,111,97,.20); color: #7a1f17; border: 1px solid rgba(255,111,97,.35); }
+
+    .item .meta{ flex:1; min-width:0; }
+    .concept{ font-weight: 900; color: #0b2a5a; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+    .amount{ font-weight: 1000; font-variant-numeric: tabular-nums; white-space:nowrap; }
+
+    .iconBtn{
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 12px;
+      padding: 8px 10px;
+      cursor:pointer;
+      font-weight: 1000;
+      line-height: 1;
+    }
+    .iconBtn:hover{ background: var(--blue-100); }
+    .iconBtn.danger:hover{ background: rgba(231,76,60,.12); border-color: rgba(231,76,60,.25); }
+    .iconBtn.coin:hover{ background: rgba(46,204,113,.14); border-color: rgba(46,204,113,.25); }
+
+    details.archive{
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 10px 12px;
+      background:#fff;
+    }
+    details.archive summary{
+      cursor:pointer;
+      font-weight: 1000;
+      color: var(--blue-900);
+      list-style:none;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    details.archive summary::-webkit-details-marker{ display:none; }
+    .archiveTitle{ display:flex; align-items:center; gap:8px; min-width:0; flex:1; }
+    .archiveTitle span{ overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+
+    /* Forecast */
+    .forecast-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 12px;
+      flex-wrap:wrap;
+    }
+    .months{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+    }
+    @media (max-width: 900px){ .months{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    .month{
+      border-radius: 16px;
+      padding: 18px 12px;
+      border: 1px solid var(--border);
+      cursor:pointer;
+      box-shadow: 0 10px 18px rgba(11,42,90,.06);
+      transition: transform .08s ease, filter .12s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      min-height: 86px;
+      font-weight: 1000;
+      letter-spacing:.2px;
+      user-select:none;
+    }
+    .month:hover{ transform: translateY(-1px); filter: brightness(1.02); }
+    .month.red{ background: rgba(231,76,60,.18); border-color: rgba(231,76,60,.30); color:#7a1f17; }
+    .month.green{ background: rgba(46,204,113,.18); border-color: rgba(46,204,113,.30); color:#145a2a; }
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 100;
+    }
+    .modal-backdrop.show{ display:flex; }
+    .modal{
+      width: min(560px, 100%);
+      background:#fff;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+    .modalHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 10px;
+    }
+    .modalHeader h2{ margin: 0; font-size: 16px; color: var(--blue-900); font-weight: 1000; }
+    .modalBody{ margin-top: 8px; }
+    .modalActions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      margin-top: 12px;
+      flex-wrap:wrap;
+    }
+    .modalActions .btn{
+      background: linear-gradient(90deg, var(--blue-900), var(--blue-700));
+      color:#fff;
+    }
+    .modalActions .btn.light{
+      background:#fff;
+      color: var(--blue-900);
+      border: 1px solid var(--border);
+    }
+    .spacer{ height: 10px; }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <img src="./cabecera.png" alt="Financium" onerror="this.style.display='none'">
+    </div>
+
+    <div class="top-actions">
+      <button id="btnBackHome" class="btn secondary" style="display:none">⬅️ Inicio</button>
+      <button id="btnArchivarTop" class="btn primary" style="display:none">📦 Archivar</button>
+      <button id="btnGearTop" class="gear" style="display:none">⚙️ Holgura</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section id="pageHome" class="page active">
+    <div class="home-grid">
+      <div class="tile" data-nav="present">
+        <img src="./presente.png" alt="Presente" onerror="this.style.display='none'">
+        <strong>Presente</strong>
+      </div>
+
+      <div class="tile" data-nav="archive">
+        <img src="./archivo.png" alt="Archivo" onerror="this.style.display='none'">
+        <strong>Archivo</strong>
+      </div>
+
+      <div class="tile" data-nav="forecast">
+        <img src="./prevision.png" alt="Previsión" onerror="this.style.display='none'">
+        <strong>Previsión</strong>
+      </div>
+
+      <div class="tile" data-nav="savings">
+        <img src="./ahorro.png" alt="Ahorro" onerror="this.style.display='none'">
+        <strong>Ahorro</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRESENT -->
+  <section id="pagePresent" class="page">
+    <div class="panel">
+      <div class="row">
+        <div>
+          <label for="pAmount">Cantidad</label>
+          <input id="pAmount" type="number" step="0.01" inputmode="decimal" placeholder="0,00" />
+        </div>
+        <div>
+          <label for="pConcept">Concepto</label>
+          <input id="pConcept" type="text" />
+        </div>
+        <div>
+          <label for="pType">Tipo</label>
+          <select id="pType">
+            <option value="income">Ingreso</option>
+            <option value="expense">Gasto</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="btnAddPresent" class="btn">➕ Añadir</button>
+        <button id="btnClearPresent" class="btn light">🧹 Limpiar</button>
+      </div>
+
+      <div class="list" id="presentList"></div>
+    </div>
+  </section>
+
+  <!-- AHORRO -->
+  <section id="pageSavings" class="page">
+    <div class="panel">
+      <div class="list" id="savingsList"></div>
+      <div class="spacer"></div>
+      <div class="actions">
+        <button id="btnClearSavings" class="btn light">🧹 Limpiar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARCHIVE -->
+  <section id="pageArchive" class="page">
+    <div class="panel">
+      <div class="list" id="archiveList"></div>
+      <div class="spacer"></div>
+      <div class="actions">
+        <button id="btnExport" class="btn light">⬇️ Exportar</button>
+        <button id="btnImport" class="btn light">⬆️ Importar</button>
+      </div>
+      <input id="importFile" type="file" accept="application/json" style="display:none">
+    </div>
+  </section>
+
+  <!-- FORECAST -->
+  <section id="pageForecast" class="page">
+    <div class="panel">
+      <div class="forecast-header">
+        <div style="font-weight:1000;color:var(--blue-900);font-size:16px">
+          <span id="yearLabel"></span>
+        </div>
+        <div style="font-weight:900;color:var(--blue-900);">
+          <span id="holguraLabel"></span>
+        </div>
+      </div>
+      <div class="months" id="monthsGrid"></div>
+    </div>
+  </section>
+
+  <!-- FORECAST MONTH DETAIL -->
+  <section id="pageForecastMonth" class="page">
+    <div class="panel">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <div style="font-weight:1000;color:var(--blue-900);font-size:16px" id="monthTitle"></div>
+        <button id="btnBackForecast" class="btn" style="background:#fff;color:var(--blue-900);border:1px solid var(--border);">⬅️</button>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="row">
+        <div>
+          <label for="fAmount">Cantidad</label>
+          <input id="fAmount" type="number" step="0.01" inputmode="decimal" placeholder="0,00" />
+        </div>
+        <div>
+          <label for="fConcept">Concepto</label>
+          <input id="fConcept" type="text" />
+        </div>
+        <div>
+          <label for="fType">Tipo</label>
+          <select id="fType">
+            <option value="income">Ingreso</option>
+            <option value="expense">Gasto</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="btnAddForecast" class="btn">➕ Añadir</button>
+        <button id="btnClearForecastMonth" class="btn light">🧹 Limpiar</button>
+      </div>
+
+      <div class="list" id="forecastMonthList"></div>
+    </div>
+  </section>
+</main>
+
+<!-- MODAL -->
+<div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modalHeader">
+      <h2 id="modalTitle"></h2>
+      <button id="btnModalCloseX" class="iconBtn" aria-label="Cerrar">✕</button>
+    </div>
+    <div id="modalBody" class="modalBody"></div>
+    <div class="modalActions">
+      <button id="btnModalCancel" class="btn light">Cancelar</button>
+      <button id="btnModalOk" class="btn">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // SW register (GitHub Pages /Financium/)
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(()=>{});
+    });
+  }
+
+  const fmtEUR = (n) => new Intl.NumberFormat('es-ES', { style:'currency', currency:'EUR' }).format(Number(n||0));
+  const nowISO = () => new Date().toISOString();
+  const uid = () => Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+  const MONTHS_ES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+  const STORAGE_KEY = "financium_v2_nocats";
+
+  function normalizeItem(it){
+    return {
+      id: it.id || uid(),
+      amount: Number(it.amount || 0),
+      concept: String(it.concept || ""),
+      type: (it.type === "expense" ? "expense" : "income"),
+      createdAt: it.createdAt || nowISO()
+    };
+  }
+
+  function loadState(){
+    const year = new Date().getFullYear();
+    const empty = { holgura: 300, present: [], savings: [], archives: [], forecast: { [year]: {} } };
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return empty;
+      const s = JSON.parse(raw);
+
+      if(typeof s.holgura !== "number") s.holgura = empty.holgura;
+      if(!Array.isArray(s.present)) s.present = [];
+      if(!Array.isArray(s.savings)) s.savings = [];
+      if(!Array.isArray(s.archives)) s.archives = [];
+      if(!s.forecast || typeof s.forecast !== "object") s.forecast = empty.forecast;
+      if(!s.forecast[year]) s.forecast[year] = {};
+
+      s.present = s.present.map(normalizeItem);
+      s.savings = s.savings.map(normalizeItem);
+      s.archives = s.archives.map(a => ({ id:a.id||uid(), name:String(a.name||"Archivo"), createdAt:a.createdAt||nowISO(), items:(a.items||[]).map(normalizeItem) }));
+
+      for(const y of Object.keys(s.forecast)){
+        const obj = s.forecast[y] || {};
+        for(const m of Object.keys(obj)){
+          obj[m] = (obj[m]||[]).map(normalizeItem);
+        }
+        s.forecast[y] = obj;
+      }
+      return s;
+    }catch(e){
+      return empty;
+    }
+  }
+
+  let state = loadState();
+  function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+  // Modal
+  const modalBackdrop = document.getElementById("modalBackdrop");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalBody = document.getElementById("modalBody");
+  const btnModalOk = document.getElementById("btnModalOk");
+  const btnModalCancel = document.getElementById("btnModalCancel");
+  const btnModalCloseX = document.getElementById("btnModalCloseX");
+  let modalOnOk = null;
+
+  function closeModal(){
+    modalBackdrop.classList.remove("show");
+    modalTitle.textContent = "";
+    modalBody.innerHTML = "";
+    modalOnOk = null;
+  }
+  function openModal({ title, bodyNode, okText="Guardar", cancelText="Cancelar", onOk }){
+    modalTitle.textContent = title;
+    modalBody.innerHTML = "";
+    modalBody.appendChild(bodyNode);
+    btnModalOk.textContent = okText;
+
+    if(String(cancelText||"") === ""){
+      btnModalCancel.style.display = "none";
+    }else{
+      btnModalCancel.style.display = "inline-flex";
+      btnModalCancel.textContent = cancelText;
+    }
+
+    modalOnOk = onOk;
+    modalBackdrop.classList.add("show");
+
+    setTimeout(()=>{
+      const f = modalBody.querySelector("input, textarea, select");
+      if(f){ f.focus(); if(f.select) f.select(); }
+    }, 0);
+  }
+  btnModalCancel.addEventListener("click", closeModal);
+  btnModalCloseX.addEventListener("click", closeModal);
+  modalBackdrop.addEventListener("click", (e)=>{ if(e.target === modalBackdrop) closeModal(); });
+  btnModalOk.addEventListener("click", async ()=>{
+    if(typeof modalOnOk === "function"){
+      const ok = await modalOnOk();
+      if(ok !== false) closeModal();
+    }else closeModal();
+  });
+
+  // Pages
+  const pages = {
+    home: document.getElementById("pageHome"),
+    present: document.getElementById("pagePresent"),
+    savings: document.getElementById("pageSavings"),
+    archive: document.getElementById("pageArchive"),
+    forecast: document.getElementById("pageForecast"),
+    forecastMonth: document.getElementById("pageForecastMonth"),
+  };
+  const btnBackHome = document.getElementById("btnBackHome");
+  const btnArchivarTop = document.getElementById("btnArchivarTop");
+  const btnGearTop = document.getElementById("btnGearTop");
+
+  let currentForecastMonth = null;
+
+  function setTopButtons(view){
+    btnBackHome.style.display = (view === "home") ? "none" : "inline-flex";
+    btnArchivarTop.style.display = (view === "present") ? "inline-flex" : "none";
+    btnGearTop.style.display = (view === "forecast") ? "inline-flex" : "none";
+  }
+
+  function showPage(view){
+    Object.values(pages).forEach(p => p.classList.remove("active"));
+    pages[view].classList.add("active");
+    setTopButtons(view);
+
+    if(view === "present") renderPresent();
+    if(view === "savings") renderSavings();
+    if(view === "archive") renderArchive();
+    if(view === "forecast") renderForecast();
+    if(view === "forecastMonth") renderForecastMonth();
+  }
+
+  document.querySelectorAll(".tile").forEach(tile=>{
+    tile.addEventListener("click", ()=> showPage(tile.dataset.nav));
+  });
+  btnBackHome.addEventListener("click", ()=> showPage("home"));
+
+  function computeBalance(items){
+    let income = 0, expense = 0;
+    for(const it of items){
+      const v = Number(it.amount || 0);
+      if(it.type === "income") income += v;
+      else expense += v;
+    }
+    return { income, expense, balance: income - expense };
+  }
+
+  // Edit movement
+  function openEditMovementModal(item, onSave){
+    const wrap = document.createElement("div");
+    wrap.className = "row";
+
+    const a = document.createElement("div");
+    a.innerHTML = `<label>Cantidad</label>`;
+    const inpAmount = document.createElement("input");
+    inpAmount.type = "number";
+    inpAmount.step = "0.01";
+    inpAmount.inputMode = "decimal";
+    inpAmount.value = String(item.amount ?? 0);
+    a.appendChild(inpAmount);
+
+    const b = document.createElement("div");
+    b.innerHTML = `<label>Concepto</label>`;
+    const inpConcept = document.createElement("input");
+    inpConcept.type = "text";
+    inpConcept.value = item.concept || "";
+    b.appendChild(inpConcept);
+
+    const c = document.createElement("div");
+    c.innerHTML = `<label>Tipo</label>`;
+    const selType = document.createElement("select");
+    selType.innerHTML = `<option value="income">Ingreso</option><option value="expense">Gasto</option>`;
+    selType.value = item.type || "income";
+    c.appendChild(selType);
+
+    wrap.appendChild(a); wrap.appendChild(b); wrap.appendChild(c);
+
+    openModal({
+      title: "Editar movimiento",
+      bodyNode: wrap,
+      okText: "Guardar",
+      cancelText: "Cancelar",
+      onOk: ()=>{
+        const n = Number(String(inpAmount.value).replace(",", "."));
+        const concept = String(inpConcept.value||"").trim();
+        if(!Number.isFinite(n)){ inpAmount.focus(); return false; }
+        if(!concept){ inpConcept.focus(); return false; }
+        item.amount = n;
+        item.concept = concept;
+        item.type = selType.value;
+        saveState();
+        onSave();
+        return true;
+      }
+    });
+  }
+
+  function openTextModal({ title, initialValue, okText, onOk }){
+    const box = document.createElement("div");
+    box.innerHTML = `<label>Nombre</label>`;
+    const inp = document.createElement("input");
+    inp.type = "text";
+    inp.value = initialValue || "";
+    box.appendChild(inp);
+
+    openModal({
+      title, bodyNode: box,
+      okText, cancelText: "Cancelar",
+      onOk: ()=>{
+        const v = String(inp.value||"").trim();
+        if(!v){ inp.focus(); return false; }
+        onOk(v);
+        return true;
+      }
+    });
+  }
+
+  function openMoveToSavingsModal(presentItem, onMoved){
+    const max = Number(presentItem.amount || 0);
+    const box = document.createElement("div");
+    box.innerHTML = `<label>Cantidad a pasar a ahorro</label>`;
+    const inp = document.createElement("input");
+    inp.type = "number";
+    inp.step = "0.01";
+    inp.inputMode = "decimal";
+    inp.min = "0";
+    inp.max = String(max);
+    inp.value = String(max);
+    box.appendChild(inp);
+
+    openModal({
+      title: "Pasar a Ahorro",
+      bodyNode: box,
+      okText: "Mover",
+      cancelText: "Cancelar",
+      onOk: ()=>{
+        const n = Number(String(inp.value).replace(",", "."));
+        if(!Number.isFinite(n) || n <= 0){ inp.focus(); return false; }
+        if(n > max){ inp.focus(); return false; }
+
+        presentItem.amount = +(max - n).toFixed(2);
+        if(presentItem.amount <= 0.000001){
+          state.present = state.present.filter(x => x.id !== presentItem.id);
+        }
+
+        state.savings.unshift(normalizeItem({
+          amount: +n.toFixed(2),
+          concept: presentItem.concept,
+          type: "income",
+          createdAt: nowISO()
+        }));
+
+        saveState();
+        onMoved();
+        return true;
+      }
+    });
+  }
+
+  function renderMovementRow(item, { onRefresh, onDelete, showCoin=false, onCoin=null }){
+    const row = document.createElement("div");
+    row.className = "item";
+
+    const pill = document.createElement("div");
+    pill.className = "pill " + (item.type === "expense" ? "expense" : "income");
+    pill.textContent = item.type === "expense" ? "Gasto" : "Ingreso";
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    const concept = document.createElement("div");
+    concept.className = "concept";
+    concept.textContent = item.concept || "";
+    meta.appendChild(concept);
+
+    const amount = document.createElement("div");
+    amount.className = "amount";
+    amount.textContent = fmtEUR(item.amount);
+
+    row.appendChild(pill);
+    row.appendChild(meta);
+    row.appendChild(amount);
+
+    if(showCoin){
+      const coin = document.createElement("button");
+      coin.className = "iconBtn coin";
+      coin.title = "Pasar a Ahorro";
+      coin.textContent = "🪙";
+      coin.addEventListener("click", ()=> onCoin && onCoin());
+      row.appendChild(coin);
+    }
+
+    const edit = document.createElement("button");
+    edit.className = "iconBtn";
+    edit.title = "Editar";
+    edit.textContent = "✏️";
+    edit.addEventListener("click", ()=> openEditMovementModal(item, onRefresh));
+
+    const del = document.createElement("button");
+    del.className = "iconBtn danger";
+    del.title = "Borrar";
+    del.textContent = "🗑️";
+    del.addEventListener("click", ()=>{
+      openModal({
+        title:"Borrar movimiento",
+        bodyNode:(()=>{const d=document.createElement("div"); d.textContent="¿Seguro?"; return d;})(),
+        okText:"Borrar",
+        cancelText:"Cancelar",
+        onOk: ()=>{ onDelete(); return true; }
+      });
+    });
+
+    row.appendChild(edit);
+    row.appendChild(del);
+    return row;
+  }
+
+  // Presente
+  const pAmount = document.getElementById("pAmount");
+  const pConcept = document.getElementById("pConcept");
+  const pType = document.getElementById("pType");
+  const btnAddPresent = document.getElementById("btnAddPresent");
+  const btnClearPresent = document.getElementById("btnClearPresent");
+  const presentList = document.getElementById("presentList");
+
+  btnAddPresent.addEventListener("click", ()=>{
+    const amount = Number(String(pAmount.value).replace(",", "."));
+    const concept = String(pConcept.value||"").trim();
+    const type = pType.value;
+
+    if(!Number.isFinite(amount) || amount === 0) return;
+    if(!concept) return;
+
+    state.present.unshift(normalizeItem({ amount, concept, type, createdAt: nowISO() }));
+    saveState();
+
+    pAmount.value = "";
+    pConcept.value = "";
+    pType.value = "income";
+    renderPresent();
+  });
+
+  btnClearPresent.addEventListener("click", ()=>{
+    if(!state.present.length) return;
+    openModal({
+      title:"Limpiar",
+      bodyNode:(()=>{const d=document.createElement("div"); d.textContent="¿Borrar todos los movimientos?"; return d;})(),
+      okText:"Borrar",
+      cancelText:"Cancelar",
+      onOk: ()=>{ state.present = []; saveState(); renderPresent(); return true; }
+    });
+  });
+
+  function renderPresent(){
+    presentList.innerHTML = "";
+    state.present.forEach(it=>{
+      presentList.appendChild(renderMovementRow(it, {
+        onRefresh: renderPresent,
+        onDelete: ()=>{ state.present = state.present.filter(x => x.id !== it.id); saveState(); renderPresent(); },
+        showCoin: true,
+        onCoin: ()=> openMoveToSavingsModal(it, ()=>{ renderPresent(); renderSavings(); })
+      }));
+    });
+  }
+
+  // Archivar desde Presente
+  btnArchivarTop.addEventListener("click", ()=>{
+    if(!state.present.length) return;
+    openTextModal({
+      title:"Nombre del archivo",
+      initialValue:"Archivo " + new Date().toLocaleDateString("es-ES"),
+      okText:"Archivar",
+      onOk:(name)=>{
+        state.archives.unshift({ id: uid(), name, createdAt: nowISO(), items: state.present.map(x=>({ ...x })) });
+        state.present = [];
+        saveState();
+        renderPresent();
+        renderArchive();
+      }
+    });
+  });
+
+  // Ahorro
+  const savingsList = document.getElementById("savingsList");
+  const btnClearSavings = document.getElementById("btnClearSavings");
+
+  btnClearSavings.addEventListener("click", ()=>{
+    if(!state.savings.length) return;
+    openModal({
+      title:"Limpiar",
+      bodyNode:(()=>{const d=document.createElement("div"); d.textContent="¿Borrar todos los movimientos de Ahorro?"; return d;})(),
+      okText:"Borrar",
+      cancelText:"Cancelar",
+      onOk: ()=>{ state.savings = []; saveState(); renderSavings(); return true; }
+    });
+  });
+
+  function renderSavings(){
+    savingsList.innerHTML = "";
+    state.savings.forEach(it=>{
+      savingsList.appendChild(renderMovementRow(it, {
+        onRefresh: renderSavings,
+        onDelete: ()=>{ state.savings = state.savings.filter(x => x.id !== it.id); saveState(); renderSavings(); },
+        showCoin:false
+      }));
+    });
+  }
+
+  // Archivo
+  const archiveList = document.getElementById("archiveList");
+  const btnExport = document.getElementById("btnExport");
+  const btnImport = document.getElementById("btnImport");
+  const importFile = document.getElementById("importFile");
+
+  function renderArchive(){
+    archiveList.innerHTML = "";
+    state.archives.forEach(group=>{
+      const det = document.createElement("details");
+      det.className = "archive";
+
+      const sum = document.createElement("summary");
+      const left = document.createElement("div");
+      left.className = "archiveTitle";
+
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = group.name;
+
+      const renameBtn = document.createElement("button");
+      renameBtn.className = "iconBtn";
+      renameBtn.textContent = "✏️";
+      renameBtn.addEventListener("click", (e)=>{
+        e.preventDefault(); e.stopPropagation();
+        openTextModal({
+          title:"Renombrar archivo",
+          initialValue: group.name,
+          okText:"Guardar",
+          onOk:(newName)=>{ group.name = newName; saveState(); renderArchive(); }
+        });
+      });
+
+      left.appendChild(nameSpan);
+      left.appendChild(renameBtn);
+
+      const right = document.createElement("div");
+      const delGroupBtn = document.createElement("button");
+      delGroupBtn.className = "iconBtn danger";
+      delGroupBtn.textContent = "🗑️";
+      delGroupBtn.addEventListener("click", (e)=>{
+        e.preventDefault(); e.stopPropagation();
+        openModal({
+          title:"Borrar archivo",
+          bodyNode:(()=>{const d=document.createElement("div"); d.textContent=`¿Borrar "${group.name}"?`; return d;})(),
+          okText:"Borrar",
+          cancelText:"Cancelar",
+          onOk: ()=>{ state.archives = state.archives.filter(a => a.id !== group.id); saveState(); renderArchive(); return true; }
+        });
+      });
+      right.appendChild(delGroupBtn);
+
+      sum.appendChild(left);
+      sum.appendChild(right);
+      det.appendChild(sum);
+
+      const inner = document.createElement("div");
+      inner.style.marginTop = "10px";
+      inner.style.display = "flex";
+      inner.style.flexDirection = "column";
+      inner.style.gap = "8px";
+
+      (group.items || []).forEach(it=>{
+        inner.appendChild(renderMovementRow(it, {
+          onRefresh: renderArchive,
+          onDelete: ()=>{ group.items = group.items.filter(x => x.id !== it.id); saveState(); renderArchive(); },
+          showCoin:false
+        }));
+      });
+
+      det.appendChild(inner);
+      archiveList.appendChild(det);
+    });
+  }
+
+  btnExport.addEventListener("click", ()=>{
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type:"application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "financium_backup.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  btnImport.addEventListener("click", ()=> importFile.click());
+  importFile.addEventListener("change", async ()=>{
+    const file = importFile.files && importFile.files[0];
+    if(!file) return;
+    try{
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      openModal({
+        title:"Importar",
+        bodyNode:(()=>{const d=document.createElement("div"); d.textContent="Esto reemplaza tus datos. ¿Continuar?"; return d;})(),
+        okText:"Importar",
+        cancelText:"Cancelar",
+        onOk: ()=>{
+          const year = new Date().getFullYear();
+          const s = parsed || {};
+          if(typeof s.holgura !== "number") s.holgura = 300;
+          if(!Array.isArray(s.present)) s.present = [];
+          if(!Array.isArray(s.savings)) s.savings = [];
+          if(!Array.isArray(s.archives)) s.archives = [];
+          if(!s.forecast || typeof s.forecast !== "object") s.forecast = { [year]: {} };
+          if(!s.forecast[year]) s.forecast[year] = {};
+          s.present = s.present.map(normalizeItem);
+          s.savings = s.savings.map(normalizeItem);
+          s.archives = s.archives.map(a => ({ id:a.id||uid(), name:String(a.name||"Archivo"), createdAt:a.createdAt||nowISO(), items:(a.items||[]).map(normalizeItem) }));
+          for(const y of Object.keys(s.forecast)){
+            const obj = s.forecast[y] || {};
+            for(const m of Object.keys(obj)) obj[m] = (obj[m]||[]).map(normalizeItem);
+            s.forecast[y] = obj;
+          }
+          state = s;
+          saveState();
+          renderPresent(); renderSavings(); renderArchive(); renderForecast();
+          return true;
+        }
+      });
+    }catch(e){}
+    finally{ importFile.value = ""; }
+  });
+
+  // Forecast
+  const yearLabel = document.getElementById("yearLabel");
+  const holguraLabel = document.getElementById("holguraLabel");
+  const monthsGrid = document.getElementById("monthsGrid");
+
+  function getForecastMonthItems(year, monthIndex){
+    if(!state.forecast[year]) state.forecast[year] = {};
+    if(!Array.isArray(state.forecast[year][monthIndex])) state.forecast[year][monthIndex] = [];
+    return state.forecast[year][monthIndex];
+  }
+  function monthClassByBalance(balance){
+    const H = Number(state.holgura || 0);
+    return (balance >= H) ? "green" : "red";
+  }
+  function renderForecast(){
+    const year = new Date().getFullYear();
+    yearLabel.textContent = year;
+    holguraLabel.textContent = fmtEUR(state.holgura);
+
+    monthsGrid.innerHTML = "";
+    for(let m=0; m<12; m++){
+      const items = getForecastMonthItems(year, m);
+      const { balance } = computeBalance(items);
+
+      const card = document.createElement("div");
+      card.className = "month " + monthClassByBalance(balance);
+      card.textContent = MONTHS_ES[m];
+      card.addEventListener("click", ()=>{
+        currentForecastMonth = { year, monthIndex: m };
+        showPage("forecastMonth");
+      });
+      monthsGrid.appendChild(card);
+    }
+  }
+
+  const monthTitle = document.getElementById("monthTitle");
+  const btnBackForecast = document.getElementById("btnBackForecast");
+  const fAmount = document.getElementById("fAmount");
+  const fConcept = document.getElementById("fConcept");
+  const fType = document.getElementById("fType");
+  const btnAddForecast = document.getElementById("btnAddForecast");
+  const btnClearForecastMonth = document.getElementById("btnClearForecastMonth");
+  const forecastMonthList = document.getElementById("forecastMonthList");
+
+  btnBackForecast.addEventListener("click", ()=> showPage("forecast"));
+
+  btnAddForecast.addEventListener("click", ()=>{
+    if(!currentForecastMonth) return;
+
+    const amount = Number(String(fAmount.value).replace(",", "."));
+    const concept = String(fConcept.value||"").trim();
+    const type = fType.value;
+    if(!Number.isFinite(amount) || amount === 0) return;
+    if(!concept) return;
+
+    const items = getForecastMonthItems(currentForecastMonth.year, currentForecastMonth.monthIndex);
+    items.unshift(normalizeItem({ amount, concept, type, createdAt: nowISO() }));
+    saveState();
+
+    fAmount.value=""; fConcept.value=""; fType.value="income";
+    renderForecastMonth();
+    renderForecast();
+  });
+
+  btnClearForecastMonth.addEventListener("click", ()=>{
+    if(!currentForecastMonth) return;
+    const items = getForecastMonthItems(currentForecastMonth.year, currentForecastMonth.monthIndex);
+    if(!items.length) return;
+
+    openModal({
+      title:"Limpiar",
+      bodyNode:(()=>{const d=document.createElement("div"); d.textContent="¿Borrar todos los movimientos del mes?"; return d;})(),
+      okText:"Borrar",
+      cancelText:"Cancelar",
+      onOk: ()=>{
+        state.forecast[currentForecastMonth.year][currentForecastMonth.monthIndex] = [];
+        saveState();
+        renderForecastMonth(); renderForecast();
+        return true;
+      }
+    });
+  });
+
+  function renderForecastMonth(){
+    if(!currentForecastMonth){ showPage("forecast"); return; }
+    const { year, monthIndex } = currentForecastMonth;
+    const items = getForecastMonthItems(year, monthIndex);
+    monthTitle.textContent = `${MONTHS_ES[monthIndex]} ${year}`;
+
+    forecastMonthList.innerHTML = "";
+    items.forEach(it=>{
+      forecastMonthList.appendChild(renderMovementRow(it, {
+        onRefresh: ()=>{ saveState(); renderForecastMonth(); renderForecast(); },
+        onDelete: ()=>{ state.forecast[year][monthIndex] = items.filter(x => x.id !== it.id); saveState(); renderForecastMonth(); renderForecast(); },
+        showCoin:false
+      }));
+    });
+  }
+
+  // Holgura
+  btnGearTop.addEventListener("click", ()=>{
+    const box = document.createElement("div");
+    box.innerHTML = `<label>Holgura</label>`;
+    const inp = document.createElement("input");
+    inp.type = "number";
+    inp.step = "0.01";
+    inp.inputMode = "decimal";
+    inp.value = String(state.holgura ?? 0);
+    box.appendChild(inp);
+
+    openModal({
+      title:"Holgura",
+      bodyNode: box,
+      okText:"Guardar",
+      cancelText:"Cancelar",
+      onOk: ()=>{
+        const n = Number(String(inp.value).replace(",", "."));
+        if(!Number.isFinite(n) || n < 0){ inp.focus(); return false; }
+        state.holgura = n;
+        saveState();
+        renderForecast();
+        return true;
+      }
+    });
+  });
+
+  // Init
+  showPage("home");
+  renderPresent();
+  renderSavings();
+  renderArchive();
+  renderForecast();
+</script>
+</body>
+</html>
+```0
